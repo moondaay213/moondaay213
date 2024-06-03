@@ -1,0 +1,105 @@
+from tkinter import *
+import tkinter.messagebox
+import pyperclip
+def copy_text():
+    text_to_copy = result_label.cget("text")
+    appframe.clipboard_clear()
+    appframe.clipboard_append(text_to_copy)
+    appframe.update()  
+    tkinter.messagebox.showinfo("Copy", "Text copied to clipboard!")
+def temp_convert():
+    from_unit = origin_unit_var.get()
+    to_unit = trans_unit_var.get()
+    value = float(value_entry.get())
+    
+    if from_unit == 'Celsius':
+        if to_unit == 'Fahrenheit':
+            result = (value * 9/5) + 32
+        elif to_unit == 'Kelvin':
+            result = value + 273.15
+        else:
+            result = value
+    elif from_unit == 'Kelvin':
+        if to_unit == 'Celsius':
+            result = value - 273.15
+        elif to_unit == 'Fahrenheit':
+            result = (value - 273.15) * 9/5 + 32
+        else:
+            result = value
+    elif from_unit == 'Fahrenheit':
+        if to_unit == 'Celsius':
+            result = (value - 32) * 5/9
+        elif to_unit == 'Kelvin':
+            result = ((value - 32) * 5/9) + 273.15
+        else:
+            result = value
+    
+    result_label.config(text=f"{value} {from_unit} equals {result} {to_unit}")
+
+def length_convert():
+    value = float(value_entry.get())
+    origin_unit = origin_unit_var.get()
+    trans_unit = trans_unit_var.get()
+    
+    units_list = {'mm': 0.001, 'cm': 0.01, 'dm': 0.1, 'm': 1, 'km' : 1000}
+
+    value_in_meter = value * units_list[origin_unit]
+    value_in_chosenunit = value_in_meter / units_list[trans_unit]
+    result_label.config(text=f"{value} {origin_unit} equals {value_in_chosenunit} {trans_unit}")
+
+appframe = Tk()
+appframe.title("Unit Converter")
+
+origin_unit_var = StringVar(appframe)
+origin_unit_var.set('Celsius')
+
+trans_unit_var = StringVar(appframe)
+trans_unit_var.set('Celsius')
+
+
+input_frame = Frame(appframe, bd=2, relief="sunken", padx=10, pady=10)
+input_frame.grid(row=0, column=0, padx=10, pady=10)
+
+
+labelO = Label(input_frame, text="Choose the origin unit:")
+labelO.grid(row=0, column=0, padx=10, pady=5, sticky=E)
+origin_unit_entry = OptionMenu(input_frame, origin_unit_var, "Celsius", "Kelvin", "Fahrenheit", "mm", "cm", "dm", "km", "m")
+origin_unit_entry.grid(row=0, column=1, padx=10, pady=5)
+
+
+labelT = Label(input_frame, text="Choose the trans unit:")
+labelT.grid(row=1, column=0, padx=10, pady=5, sticky=E)
+trans_unit_entry = OptionMenu(input_frame, trans_unit_var, "Celsius", "Kelvin", "Fahrenheit", "mm", "cm", "dm", "km", "m")
+trans_unit_entry.grid(row=1, column=1, padx=10, pady=5)
+
+
+labelV = Label(input_frame, text="Enter the value:")
+labelV.grid(row=2, column=0, padx=10, pady=5, sticky=E)
+value_entry = Entry(input_frame)
+value_entry.grid(row=2, column=1, padx=10, pady=5)
+
+
+button_frame = Frame(appframe, bd=2, relief="sunken", padx=10, pady=10)
+button_frame.grid(row=1, column=0, padx=10, pady=10)
+
+
+temp_button = Button(button_frame, text="Convert Temperature", command=temp_convert)
+temp_button.grid(row=0, column=0, padx=10, pady=5)
+
+length_button = Button(button_frame, text="Convert Length", command=length_convert)
+length_button.grid(row=0, column=1, padx=10, pady=5)
+
+
+result_frame = Frame(appframe, bd=2, relief="sunken", padx=10, pady=10)
+result_frame.grid(row=2, column=0, padx=10, pady=10)
+
+
+result_label = Label(result_frame, text="")
+result_label.grid(row=0, column=0, columnspan=2, padx=10, pady=5)
+
+
+exit_button = Button(result_frame, text="Exit", command=appframe.quit)
+exit_button.grid(row=1, column=0, columnspan=2, padx=10, pady=5)
+copy_button = Button(result_frame, text="Copy Text", command=copy_text)
+copy_button.grid(row=2, column=0,columnspan=2, padx=10, pady=5)
+appframe.mainloop()
